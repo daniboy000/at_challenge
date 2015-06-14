@@ -9,6 +9,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,8 +30,10 @@ public class FetchDataFromServer extends AsyncTask<Void, Void, Void> {
     private final static String END_POINT_DEPARTURES = "https://api.appglu.com/v1/queries/findDeparturesByRouteId/run";
 
     private String mJsonRoute;
+    private RouteList mRouteList;
 
-    public FetchDataFromServer(String route) {
+    public FetchDataFromServer(String route, RouteList routeList) {
+        mRouteList = routeList;
         mJsonRoute = "{\"params\": {\"stopName\": \"%" + route + "%\"}}";
     }
 
@@ -48,13 +51,12 @@ public class FetchDataFromServer extends AsyncTask<Void, Void, Void> {
                 result = "Did not work.";
             }
 
-            Log.i("Routes", "Params: " + mJsonRoute);
-            Log.i("Routes", "Response: " + result);
-
+            mRouteList.setRoutes(result);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
 
         return null;
     }

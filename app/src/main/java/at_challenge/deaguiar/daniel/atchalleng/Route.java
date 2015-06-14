@@ -1,5 +1,7 @@
 package at_challenge.deaguiar.daniel.atchalleng;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -14,12 +16,12 @@ public class Route {
     Date mLastModifiedDate;
     int mAgencyId;
 
-    public Route(int id, String shortName, String longName, Date modifiedDate, int agencyId) {
-        mId = id;
-        mShortName = shortName;
-        mLongName  = longName;
-        mLastModifiedDate = modifiedDate;
-        mAgencyId = agencyId;
+    public Route() {
+        mId = 0;
+        mShortName = "";
+        mLongName  = "";
+        mLastModifiedDate = null;
+        mAgencyId = 0;
     }
 
     public int getId() {
@@ -52,6 +54,15 @@ public class Route {
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         mLastModifiedDate = lastModifiedDate;
+    }
+
+    public void setDateFromString(String lastModifiedDate) {
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        try {
+            mLastModifiedDate = formater.parse(lastModifiedDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public int getAgencyId() {
