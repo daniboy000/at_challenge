@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AtChalleng</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="list_routes_warning_message">No Routes</string>
+    <string name="search_route">Search</string>
+
+</resources>

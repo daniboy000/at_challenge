@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".RoutesListActivity">
+      <item android:id="@+id/search"
+            android:title="@string/search_route"
+            android:showAsAction="always"
+            android:actionViewClass="android.widget.SearchView" />
+</menu>
