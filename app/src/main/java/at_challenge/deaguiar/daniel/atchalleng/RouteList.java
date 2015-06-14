@@ -28,16 +28,8 @@ public class RouteList {
     private static RouteList sRouteList;
     private Context mAppContext;
 
-    private RouteList(Context appContext) {
+    public RouteList() {
         mRoutes = new ArrayList<Route>();
-        mAppContext = appContext;
-    }
-
-    public static RouteList getInstance(Context appContext) {
-        if (sRouteList == null) {
-            sRouteList =  new RouteList(appContext.getApplicationContext());
-        }
-        return sRouteList;
     }
 
     public ArrayList<Route> getRoutes() {
