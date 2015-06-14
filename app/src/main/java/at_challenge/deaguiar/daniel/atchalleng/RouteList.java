@@ -15,6 +15,7 @@ import java.util.ArrayList;
  *  @author Daniel Besen de Aguiar
  */
 public class RouteList {
+    public static final String TAG = "RouteList";
 
     public static final String ID = "id";
     public static final String SHORT_NAME = "shortName";
@@ -57,6 +58,8 @@ public class RouteList {
      * @throws JSONException
      */
     public void setRoutes(String routes) throws JSONException {
+        mRoutes.clear();
+
         JSONObject routesObject = new JSONObject(routes);
         JSONArray routesArray = routesObject.getJSONArray(ROWS);
 
