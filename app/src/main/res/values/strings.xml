@@ -7,5 +7,6 @@
     <string name="search_route">Search</string>
 
     <string name="search_hint">Type Location</string>
-
+    <string name="title_activity_route_detail">RouteDetailActivity</string>
+    
 </resources>

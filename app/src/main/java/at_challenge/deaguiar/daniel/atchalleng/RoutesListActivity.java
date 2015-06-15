@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -52,7 +53,7 @@ public class RoutesListActivity extends ListActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String address = intent.getStringExtra(SearchManager.QUERY);
 
-            new FetchData(address).execute();
+            new FetchRouteData(address).execute();
         }
     }
 
@@ -62,6 +63,18 @@ public class RoutesListActivity extends ListActivity {
         setListAdapter(routeAdapter);
 
         routeAdapter.notifyDataSetChanged();
+    }
+
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Route route = ((RouteAdapter)getListAdapter()).getItem(position);
+
+        Log.i("ROUTE", "Route item: " + route.getLongName());
+
+        Intent i = new Intent(getApplicationContext(), RouteDetailActivity.class);
+        i.putExtra(RouteDetailActivity.EXTRA_ROUTE_ID, route.getId());
+        i.putExtra(RouteDetailActivity.EXTRA_ROUTE_NAME, route.getLongName());
+
+        startActivity(i);
     }
 
     @Override
@@ -117,82 +130,23 @@ public class RoutesListActivity extends ListActivity {
         }
     }
 
-    private class FetchData extends AsyncTask<Void, Void, RouteList> {
-        private final static String USERNAME = "WKD4N7YMA1uiM8V";
-        private final static String PASSWORD = "DtdTtzMLQlA0hk2C1Yi5pLyVIlAQ68";
+    private class FetchRouteData extends FetchDataFromServer {
         private final static String END_POINT_ROUTES = "https://api.appglu.com/v1/queries/findRoutesByStopName/run";
 
-        private String mJsonRoute;
-
-        public FetchData(String route) {
+        public FetchRouteData(String route) {
             mJsonRoute = "{\"params\": {\"stopName\": \"%" + route + "%\"}}";
+            mEndPoint  = END_POINT_ROUTES;
         }
 
         @Override
-        protected RouteList doInBackground(Void... params) {
+        protected void onPostExecute(String result) {
             try {
-                HttpResponse response = getHttpResponse(mJsonRoute);
-
-                String result = "";
-                InputStream inputStream = response.getEntity().getContent();
-                if (inputStream != null) {
-                    result = convertInputStreamToString(inputStream);
-                }
-
-                RouteList routeList = new RouteList();
-                routeList.setRoutes(result);
-
-                return routeList;
-            } catch (IOException e) {
-                e.printStackTrace();
+                mRouteList = new RouteList();
+                mRouteList.setRoutes(result);
+                setupAdapter();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(RouteList routeList) {
-            mRouteList = routeList;
-            setupAdapter();
-        }
-
-        protected HttpResponse getHttpResponse(String jsonValue) throws IOException{
-            HttpClient client = new DefaultHttpClient();
-            HttpPost postRequest = new HttpPost(END_POINT_ROUTES);
-
-            String credentials = USERNAME + ":" + PASSWORD;
-            String base64EncodedCredentials = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-
-            postRequest.addHeader("Content-type", "application/json");
-            postRequest.addHeader("Authorization", "Basic " + base64EncodedCredentials);
-            postRequest.addHeader("X-AppGlu-Environment", "staging");
-
-            StringEntity se = new StringEntity(jsonValue);
-            postRequest.setEntity(se);
-
-            HttpResponse response = client.execute(postRequest);
-
-            return response;
-        }
-
-        /**
-         *
-         * @param inputStream
-         * @return
-         * @throws IOException
-         */
-        private String convertInputStreamToString(InputStream inputStream) throws IOException {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String line   = "";
-            String result = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                result += line;
-            }
-            inputStream.close();
-
-            return result;
         }
     }
 }
