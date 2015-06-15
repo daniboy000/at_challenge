@@ -4,9 +4,7 @@ import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,29 +14,28 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-
+/**
+ *
+ */
 public class RoutesListActivity extends ListActivity {
 
     RouteList mRouteList;
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes_list);
+
+        mRouteList = new RouteList();
+        RouteAdapter adapter = new RouteAdapter(mRouteList.getRoutes());
+        setListAdapter(adapter);
+
+        mListView = (ListView)findViewById(android.R.id.list);
+        mListView.setEmptyView(findViewById(android.R.id.empty));
 
         handleIntent(getIntent());
     }
@@ -141,7 +138,7 @@ public class RoutesListActivity extends ListActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
-                mRouteList = new RouteList();
+
                 mRouteList.setRoutes(result);
                 setupAdapter();
             } catch (JSONException e) {

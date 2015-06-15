@@ -1,7 +1,6 @@
 package at_challenge.deaguiar.daniel.atchalleng;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;

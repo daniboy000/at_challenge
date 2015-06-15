@@ -8,5 +8,6 @@
 
     <string name="search_hint">Type Location</string>
     <string name="title_activity_route_detail">RouteDetailActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

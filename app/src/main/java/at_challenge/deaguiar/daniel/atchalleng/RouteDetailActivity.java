@@ -1,34 +1,35 @@
 package at_challenge.deaguiar.daniel.atchalleng;
 
 import android.app.Activity;
-import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
+import android.os.Handler;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import org.json.JSONException;
+import java.util.ArrayList;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+/**
+ *
+ */
+public class RouteDetailActivity extends Activity implements FetchServerResultReceiver.Receiver {
 
-
-public class RouteDetailActivity extends Activity {
-
-    public static final String EXTRA_ROUTE_ID = "id";
+    public static final String EXTRA_ROUTE_ID   = "id";
     public static final String EXTRA_ROUTE_NAME = "longName";
+    private final static String END_POINT_STOPS = "https://api.appglu.com/v1/queries/findStopsByRouteId/run";
 
     private int mRouteId;
     private String mRouteName;
+    private BusStopList mBusStopList;
+
+    private TextView mRouteNameTextView;
+    private ListView mStopListView;
+
+    private FetchServerResultReceiver mResultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,58 +42,67 @@ public class RouteDetailActivity extends Activity {
         Log.i("ROUTES", "ID: " + mRouteId);
         Log.i("ROUTES", "NAME: " + mRouteName);
 
-        new FetchStopData(mRouteId).execute();
+        mRouteNameTextView = (TextView)findViewById(R.id.route_detail_name);
+        mStopListView = (ListView)findViewById(R.id.route_detail_stop_list);
 
-        new FetchDepartureData(mRouteId).execute();
+        //-----------------------------------------------------------------------
+        mResultReceiver = new FetchServerResultReceiver(new Handler());
+        mResultReceiver.setReceiver(this);
+
+        Intent intent = new Intent(Intent.ACTION_SYNC, null, this, FetchFromServerService.class);
+        intent.putExtra(FetchFromServerService.INTENT_ID, mRouteId);
+        intent.putExtra(FetchFromServerService.INTENT_URL, END_POINT_STOPS);
+        intent.putExtra("receiver", mResultReceiver);
+
+        startService(intent);
+
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_route_detail, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        switch (resultCode) {
+            case FetchFromServerService.STATUS_FINISHED:
+                mRouteNameTextView.setText(mRouteName + " - " + mRouteName);
+                String result = resultData.getString("result");
 
-    private class FetchDepartureData extends FetchDataFromServer {
-        private final static String END_POINT_DEPARTURES = "https://api.appglu.com/v1/queries/findDeparturesByRouteId/run";
+                try {
+                    mBusStopList = new BusStopList(result);
+                    BusStopAdapter adapter = new BusStopAdapter(mBusStopList.getBusStopList());
 
-        public FetchDepartureData(int routeId) {
-            mJsonRoute = "{\"params\": {\"stopName\": \"%" + routeId + "%\"}}";
-            mEndPoint = END_POINT_DEPARTURES;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Log.i("ROUTES", "DEPARTURE: " + result);
+                    mStopListView.setAdapter(adapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case FetchFromServerService.STATUS_ERROR:
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                break;
         }
     }
 
-    private class FetchStopData extends FetchDataFromServer {
-        private final static String END_POINT_STOPS = "https://api.appglu.com/v1/queries/findStopsByRouteId/run";
+    private class BusStopAdapter extends ArrayAdapter<BusStop> {
 
-        public FetchStopData(int routeId) {
-            mJsonRoute = "{\"params\": {\"stopName\": \"%" + routeId + "%\"}}";
-            mEndPoint = END_POINT_STOPS;
+        public BusStopAdapter(ArrayList<BusStop> busStops) {
+            super(getApplicationContext(), 0, busStops);
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            Log.i("ROUTES", "STOP: " + result);
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.route_detail_bus_stop_item, null);
+            }
+
+            BusStop busStop = getItem(position);
+
+            TextView busStopName = (TextView)convertView.findViewById(R.id.route_detail_bus_stop_item_name);
+            busStopName.setText(busStop.getName());
+
+            return convertView;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return false;
         }
     }
 }

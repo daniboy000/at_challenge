@@ -28,6 +28,11 @@
             android:name=".RouteDetailActivity"
             android:label="@string/title_activity_route_detail" >
         </activity>
+
+        <service
+            android:name=".FetchFromServerService"
+            android:exported="false" />
+
     </application>
 
 </manifest>
