@@ -43,6 +43,8 @@ public class DownloadIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         final ResultReceiver resultReceiver = intent.getParcelableExtra("receiver");
+
+        // Get id from intent
         int id = intent.getIntExtra(INTENT_ID, 0);
 
         // Get URL's from intent
@@ -53,7 +55,7 @@ public class DownloadIntentService extends IntentService {
         Log.i("ROUTES", "urlDepart: " + urlDepart);
 
         Bundle bundle = new Bundle();
-        String jsonValue = "{\"params\": {\"stopName\": \"%" + id + "%\"}}";
+        String jsonValue = "{\"params\": {\"routeId\": \"" + id + "\"}}";
 
         try {
             String resultBus = "";
@@ -68,7 +70,7 @@ public class DownloadIntentService extends IntentService {
             InputStream inputStreamDeparture = responseDepart.getEntity().getContent();
 
             // Check if response is valid
-            if (inputStreamBus != null && inputStreamDeparture != null) {
+            if (inputStreamBus != null /* && inputStreamDeparture != null*/) {
                 resultBus = convertInputStreamToString(inputStreamBus);
                 Log.i("ROUTES", "BUS FETCH: " + resultBus);
 

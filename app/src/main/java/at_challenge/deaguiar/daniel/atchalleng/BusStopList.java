@@ -71,8 +71,6 @@ public class BusStopList {
             busStop.setName(name);
 
             mBusStops.add(busStop);
-
-            Log.i("ROUTES", "BUS JSON: " + busJson.toString());
         }
     }
 }
