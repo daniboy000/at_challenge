@@ -21,17 +21,21 @@ import java.io.InputStreamReader;
 /**
  * Created by daniel on 15/06/15.
  */
-public class FetchFromServerService extends IntentService {
+public class DownloadIntentService extends IntentService {
 
     public static final String INTENT_ID = "id";
-    public static final String INTENT_URL = "url";
+    public static final String URL_BUS_STOP = "url_stop";
+    public static final String URL_BUS_DEPARTURE = "url_departure";
+    public static final String RESULT_BUS = "result_bus";
+    public static final String RESULT_DEPARTURE = "result_departure";
+
     public static final int STATUS_FINISHED = 0;
     public static final int STATUS_ERROR = 1;
 
     private final static String USERNAME = "WKD4N7YMA1uiM8V";
     private final static String PASSWORD = "DtdTtzMLQlA0hk2C1Yi5pLyVIlAQ68";
 
-    public FetchFromServerService() {
+    public DownloadIntentService() {
         super("FetchDataFromService");
     }
 
@@ -40,24 +44,40 @@ public class FetchFromServerService extends IntentService {
 
         final ResultReceiver resultReceiver = intent.getParcelableExtra("receiver");
         int id = intent.getIntExtra(INTENT_ID, 0);
-        String url = intent.getStringExtra(INTENT_URL);
+
+        // Get URL's from intent
+        String urlStop = intent.getStringExtra(URL_BUS_STOP);
+        String urlDepart = intent.getStringExtra(URL_BUS_DEPARTURE);
+
+        Log.i("ROUTES", "urlStop: " + urlStop);
+        Log.i("ROUTES", "urlDepart: " + urlDepart);
 
         Bundle bundle = new Bundle();
-
         String jsonValue = "{\"params\": {\"stopName\": \"%" + id + "%\"}}";
 
         try {
-            String result = "";
-            HttpResponse response = getHttpResponse(jsonValue, url);
-            InputStream inputStream = response.getEntity().getContent();
-            if (inputStream != null) {
-                result = convertInputStreamToString(inputStream);
-                Log.i("ROUTES", "RESULTS FETCH: " + result);
+            String resultBus = "";
+            String resultDepart = "";
 
-                bundle.putString("result", result);
+            // Get response for Bus
+            HttpResponse responseBus = getHttpResponse(jsonValue, urlStop);
+            InputStream inputStreamBus = responseBus.getEntity().getContent();
+
+            // Get response for Departures
+            HttpResponse responseDepart = getHttpResponse(jsonValue, urlDepart);
+            InputStream inputStreamDeparture = responseDepart.getEntity().getContent();
+
+            // Check if response is valid
+            if (inputStreamBus != null && inputStreamDeparture != null) {
+                resultBus = convertInputStreamToString(inputStreamBus);
+                Log.i("ROUTES", "BUS FETCH: " + resultBus);
+
+                resultDepart = convertInputStreamToString(inputStreamDeparture);
+                Log.i("ROUTES", "DEPARTURE FETCH: " + resultDepart);
+
+                bundle.putString(RESULT_BUS , resultBus);
+                bundle.putString(RESULT_DEPARTURE, resultDepart);
                 resultReceiver.send(STATUS_FINISHED, bundle);
-
-                Log.i("ROUTES", "RESULTS FETCH: " + result);
             }
         } catch (IOException e) {
             bundle.putString(Intent.EXTRA_TEXT, e.toString());

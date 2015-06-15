@@ -14,7 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -138,9 +143,18 @@ public class RoutesListActivity extends ListActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
+                // Check if the result is valid or is an error
+                JSONObject jsonObject = new JSONObject(result);
+                if (!jsonObject.isNull("error")) {
+                    JSONObject jsonError = jsonObject.getJSONObject("error");
 
-                mRouteList.setRoutes(result);
-                setupAdapter();
+                    Log.i("ROUTES", jsonObject.getString("error"));
+                    Toast.makeText(getApplicationContext(), jsonError.getString("message"), Toast.LENGTH_LONG).show();
+                }
+                else {
+                    mRouteList.setRoutes(result);
+                    setupAdapter();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -16,11 +16,12 @@ import java.util.ArrayList;
 /**
  *
  */
-public class RouteDetailActivity extends Activity implements FetchServerResultReceiver.Receiver {
+public class RouteDetailActivity extends Activity implements DownloadResultReceiver.Receiver {
 
     public static final String EXTRA_ROUTE_ID   = "id";
     public static final String EXTRA_ROUTE_NAME = "longName";
     private final static String END_POINT_STOPS = "https://api.appglu.com/v1/queries/findStopsByRouteId/run";
+    private final static String END_POINT_DEPARTURES = "https://api.appglu.com/v1/queries/findDeparturesByRouteId/run";
 
     private int mRouteId;
     private String mRouteName;
@@ -29,7 +30,7 @@ public class RouteDetailActivity extends Activity implements FetchServerResultRe
     private TextView mRouteNameTextView;
     private ListView mStopListView;
 
-    private FetchServerResultReceiver mResultReceiver;
+    private DownloadResultReceiver mResultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,25 +46,26 @@ public class RouteDetailActivity extends Activity implements FetchServerResultRe
         mRouteNameTextView = (TextView)findViewById(R.id.route_detail_name);
         mStopListView = (ListView)findViewById(R.id.route_detail_stop_list);
 
-        //-----------------------------------------------------------------------
-        mResultReceiver = new FetchServerResultReceiver(new Handler());
+        // Prepare for fetching data from Server
+        mResultReceiver = new DownloadResultReceiver(new Handler());
         mResultReceiver.setReceiver(this);
 
-        Intent intent = new Intent(Intent.ACTION_SYNC, null, this, FetchFromServerService.class);
-        intent.putExtra(FetchFromServerService.INTENT_ID, mRouteId);
-        intent.putExtra(FetchFromServerService.INTENT_URL, END_POINT_STOPS);
+        // Setting intent for DownloadResultReceiver
+        Intent intent = new Intent(Intent.ACTION_SYNC, null, this, DownloadIntentService.class);
+        intent.putExtra(DownloadIntentService.INTENT_ID, mRouteId);
+        intent.putExtra(DownloadIntentService.URL_BUS_STOP, END_POINT_STOPS);
+        intent.putExtra(DownloadIntentService.URL_BUS_DEPARTURE, END_POINT_DEPARTURES);
         intent.putExtra("receiver", mResultReceiver);
 
         startService(intent);
-
     }
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
-            case FetchFromServerService.STATUS_FINISHED:
-                mRouteNameTextView.setText(mRouteName + " - " + mRouteName);
-                String result = resultData.getString("result");
+            case DownloadIntentService.STATUS_FINISHED:
+                mRouteNameTextView.setText(mRouteId + " - " + mRouteName);
+                String result = resultData.getString(DownloadIntentService.RESULT_BUS);
 
                 try {
                     mBusStopList = new BusStopList(result);
@@ -74,7 +76,7 @@ public class RouteDetailActivity extends Activity implements FetchServerResultRe
                     e.printStackTrace();
                 }
                 break;
-            case FetchFromServerService.STATUS_ERROR:
+            case DownloadIntentService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 break;
         }

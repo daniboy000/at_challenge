@@ -30,7 +30,7 @@
         </activity>
 
         <service
-            android:name=".FetchFromServerService"
+            android:name=".DownloadIntentService"
             android:exported="false" />
 
     </application>

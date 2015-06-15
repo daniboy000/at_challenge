@@ -7,11 +7,11 @@ import android.os.Handler;
 /**
  * Created by daniel on 15/06/15.
  */
-public class FetchServerResultReceiver extends ResultReceiver {
+public class DownloadResultReceiver extends ResultReceiver {
 
     private Receiver mReceiver;
 
-    public FetchServerResultReceiver(Handler handler) {
+    public DownloadResultReceiver(Handler handler) {
         super(handler);
     }
 
