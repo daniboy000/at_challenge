@@ -1,6 +1,4 @@
-package at_challenge.deaguiar.daniel.atchalleng;
-
-import android.util.Log;
+package at_challenge.deaguiar.daniel.atchalleng.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;

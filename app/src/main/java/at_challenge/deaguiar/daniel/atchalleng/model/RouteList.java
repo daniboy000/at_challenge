@@ -1,4 +1,4 @@
-package at_challenge.deaguiar.daniel.atchalleng;
+package at_challenge.deaguiar.daniel.atchalleng.model;
 
 import android.content.Context;
 

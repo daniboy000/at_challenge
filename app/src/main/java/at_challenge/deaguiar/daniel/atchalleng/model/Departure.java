@@ -1,4 +1,4 @@
-package at_challenge.deaguiar.daniel.atchalleng;
+package at_challenge.deaguiar.daniel.atchalleng.model;
 
 /**
  * Created by daniel on 14/06/15.

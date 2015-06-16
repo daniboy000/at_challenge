@@ -1,4 +1,4 @@
-package at_challenge.deaguiar.daniel.atchalleng;
+package at_challenge.deaguiar.daniel.atchalleng.util;
 
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 /**
  * Created by daniel on 14/06/15.
  */
-public abstract class FetchDataFromServer extends AsyncTask<Void, Void, String> {
+public abstract class HttpRequesAsyncTask extends AsyncTask<Void, Void, String> {
     protected final static String USERNAME = "WKD4N7YMA1uiM8V";
     protected final static String PASSWORD = "DtdTtzMLQlA0hk2C1Yi5pLyVIlAQ68";
 

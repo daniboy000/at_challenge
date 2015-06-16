@@ -1,4 +1,4 @@
-package at_challenge.deaguiar.daniel.atchalleng;
+package at_challenge.deaguiar.daniel.atchalleng.controller;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -16,11 +16,15 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import at_challenge.deaguiar.daniel.atchalleng.model.RouteList;
+import at_challenge.deaguiar.daniel.atchalleng.model.Route;
+import at_challenge.deaguiar.daniel.atchalleng.util.HttpRequesAsyncTask;
+import at_challenge.deaguiar.daniel.atchalleng.R;
 
 /**
  *
@@ -132,7 +136,7 @@ public class RoutesListActivity extends ListActivity {
         }
     }
 
-    private class FetchRouteData extends FetchDataFromServer {
+    private class FetchRouteData extends HttpRequesAsyncTask {
         private final static String END_POINT_ROUTES = "https://api.appglu.com/v1/queries/findRoutesByStopName/run";
 
         public FetchRouteData(String route) {
