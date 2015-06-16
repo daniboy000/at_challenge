@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  * Responsible to manage all the routes the application uses
  *  @author Daniel Besen de Aguiar
  */
-public class RouteList {
+public class RouteList implements Serializable {
     public static final String TAG = "RouteList";
 
     public static final String ID = "id";

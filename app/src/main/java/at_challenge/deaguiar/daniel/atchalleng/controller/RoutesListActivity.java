@@ -1,5 +1,6 @@
 package at_challenge.deaguiar.daniel.atchalleng.controller;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -33,20 +34,70 @@ public class RoutesListActivity extends ListActivity {
 
     RouteList mRouteList;
     private ListView mListView;
+    private TextView mRouteTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes_list);
 
-        mRouteList = new RouteList();
-        RouteAdapter adapter = new RouteAdapter(mRouteList.getRoutes());
-        setListAdapter(adapter);
+        Log.i("Routes", "ON CREATE MAIN");
 
+        mRouteTitle = (TextView) findViewById(R.id.route_title);
         mListView = (ListView)findViewById(android.R.id.list);
-        mListView.setEmptyView(findViewById(android.R.id.empty));
+        mRouteList = new RouteList();
+
+        // Check for saved data
+        if (savedInstanceState != null) {
+            Log.i("ROUTES", "RECUPERANDO BUNDLE");
+            mRouteList = (RouteList)savedInstanceState.getSerializable("LIST");
+            String routeName = savedInstanceState.getString("ROUTE_NAME");
+            mRouteTitle.setText(routeName);
+            setupAdapter();
+        }
+        else {
+            mRouteTitle.setText(R.string.initial_message);
+        }
 
         handleIntent(getIntent());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("Routes", "ON RESUME MAIN");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i("Routes", "ON START MAIN");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("Routes", "ON PAUSE MAIN");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("ROUTES", "ON STOP MAIN");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("Routes", "ON DESTROY  MAIN");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i("ROUTES", "SALVANDO O BUNDLE");
+        savedInstanceState.putSerializable("LIST", mRouteList);
+        savedInstanceState.putSerializable("ROUTE_NAME", mRouteTitle.getText().toString());
     }
 
     @Override
@@ -55,7 +106,6 @@ public class RoutesListActivity extends ListActivity {
     }
 
     private void handleIntent(Intent intent) {
-
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String address = intent.getStringExtra(SearchManager.QUERY);
 
@@ -65,9 +115,7 @@ public class RoutesListActivity extends ListActivity {
 
     void setupAdapter() {
         RouteAdapter routeAdapter = new RouteAdapter(mRouteList.getRoutes());
-
         setListAdapter(routeAdapter);
-
         routeAdapter.notifyDataSetChanged();
     }
 
@@ -138,8 +186,10 @@ public class RoutesListActivity extends ListActivity {
 
     private class FetchRouteData extends HttpRequesAsyncTask {
         private final static String END_POINT_ROUTES = "https://api.appglu.com/v1/queries/findRoutesByStopName/run";
+        private String mRoute;
 
         public FetchRouteData(String route) {
+            mRoute = route;
             mJsonRoute = "{\"params\": {\"stopName\": \"%" + route + "%\"}}";
             mEndPoint  = END_POINT_ROUTES;
         }
@@ -155,7 +205,14 @@ public class RoutesListActivity extends ListActivity {
                     Log.i("ROUTES", jsonObject.getString("error"));
                     Toast.makeText(getApplicationContext(), jsonError.getString("message"), Toast.LENGTH_LONG).show();
                 }
-                else {
+                else if (jsonObject.getJSONArray("rows").length() == 0) { // Check if the route was founded
+                    Log.i("ROUTES", "result: " + result);
+                    Log.i("ROUTES", "result: " + jsonObject.getJSONArray("rows").length());
+
+                    Toast.makeText(getApplicationContext(), "Address Not Found", Toast.LENGTH_LONG).show();
+                }
+                else { // Show routes
+                    mRouteTitle.setText(mRoute);
                     mRouteList.setRoutes(result);
                     setupAdapter();
                 }

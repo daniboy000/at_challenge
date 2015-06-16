@@ -2,6 +2,7 @@ package at_challenge.deaguiar.daniel.atchalleng.util;
 
 import android.os.AsyncTask;
 import android.util.Base64;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 
 /**
  * Created by daniel on 14/06/15.
@@ -36,13 +38,12 @@ public abstract class HttpRequesAsyncTask extends AsyncTask<Void, Void, String> 
 
             return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.i("ROUTES", "EXCESSAO: " + e.toString());
+            return "{\"error\": {\"message\": \"Could not connect to Server. Please check your network connection\"}}";
         }
-
-        return null;
     }
 
-    protected HttpResponse getHttpResponse(String jsonValue) throws IOException{
+    protected HttpResponse getHttpResponse(String jsonValue) throws IOException {
         HttpClient client = new DefaultHttpClient();
         HttpPost postRequest = new HttpPost(mEndPoint);
 

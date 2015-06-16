@@ -3,7 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
 
-    <string name="list_routes_warning_message">No Routes</string>
+    <string name="initial_message">No Routes. Please search for a location</string>
     <string name="search_route">Search</string>
 
     <string name="search_hint">Type Location</string>

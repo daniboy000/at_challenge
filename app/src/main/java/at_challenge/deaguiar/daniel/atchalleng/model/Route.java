@@ -1,5 +1,6 @@
 package at_challenge.deaguiar.daniel.atchalleng.model;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  *  @author Daniel Besen de Aguiar
  */
-public class Route {
+public class Route implements Serializable {
     int mId;
     String mShortName;
     String mLongName;
