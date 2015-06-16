@@ -1,10 +1,11 @@
 package at_challenge.deaguiar.daniel.atchalleng.controller;
 
-import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -109,7 +110,14 @@ public class RoutesListActivity extends ListActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String address = intent.getStringExtra(SearchManager.QUERY);
 
-            new FetchRouteData(address).execute();
+            if (internetIsAvailable()) {
+                new FetchRouteData(address).execute();
+            }
+            else {
+                Toast.makeText(getApplicationContext(),
+                        "Your device is not connected. Please check your internet connection",
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -120,15 +128,22 @@ public class RoutesListActivity extends ListActivity {
     }
 
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Route route = ((RouteAdapter)getListAdapter()).getItem(position);
+        if (internetIsAvailable()) {
+            Route route = ((RouteAdapter) getListAdapter()).getItem(position);
 
-        Log.i("ROUTE", "Route item: " + route.getLongName());
+            Log.i("ROUTE", "Route item: " + route.getLongName());
 
-        Intent i = new Intent(getApplicationContext(), RouteDetailActivity.class);
-        i.putExtra(RouteDetailActivity.EXTRA_ROUTE_ID, route.getId());
-        i.putExtra(RouteDetailActivity.EXTRA_ROUTE_NAME, route.getLongName());
+            Intent i = new Intent(getApplicationContext(), RouteDetailActivity.class);
+            i.putExtra(RouteDetailActivity.EXTRA_ROUTE_ID, route.getId());
+            i.putExtra(RouteDetailActivity.EXTRA_ROUTE_NAME, route.getLongName());
 
-        startActivity(i);
+            startActivity(i);
+        }
+        else {
+            Toast.makeText(getApplicationContext(),
+                    "Your device is not connected. Please check your internet connection",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -182,6 +197,20 @@ public class RoutesListActivity extends ListActivity {
 
             return convertView;
         }
+    }
+
+    private boolean internetIsAvailable() {
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (wifi != null && wifi.isConnected())
+            return true;
+        if (mobile != null && mobile.isConnected())
+            return true;
+        return false;
     }
 
     private class FetchRouteData extends HttpRequesAsyncTask {
