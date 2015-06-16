@@ -25,7 +25,6 @@ public class RouteList implements Serializable {
 
     private static final String ROWS = "rows";
     private ArrayList<Route> mRoutes;
-    private static RouteList sRouteList;
     private Context mAppContext;
 
     public RouteList() {

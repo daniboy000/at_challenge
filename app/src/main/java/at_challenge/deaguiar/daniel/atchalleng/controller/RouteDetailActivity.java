@@ -2,42 +2,34 @@ package at_challenge.deaguiar.daniel.atchalleng.controller;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ListActivity;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
-import at_challenge.deaguiar.daniel.atchalleng.util.HttpRequesAsyncTask;
+import at_challenge.deaguiar.daniel.atchalleng.model.BusStopList;
 import at_challenge.deaguiar.daniel.atchalleng.service.DownloadIntentService;
 import at_challenge.deaguiar.daniel.atchalleng.service.DownloadResultReceiver;
 import at_challenge.deaguiar.daniel.atchalleng.model.BusStop;
 import at_challenge.deaguiar.daniel.atchalleng.model.Departure;
 import at_challenge.deaguiar.daniel.atchalleng.model.DepartureList;
-import at_challenge.deaguiar.daniel.atchalleng.model.Route;
-import at_challenge.deaguiar.daniel.atchalleng.model.RouteList;
 import at_challenge.deaguiar.daniel.atchalleng.R;
 
 /**
+ * RouteDetailsActivity
+ * Responsible to fetch route data from server and show it to the user
  *
+ * @author Daniel Besen de Aguiar
  */
 public class RouteDetailActivity extends Activity implements DownloadResultReceiver.Receiver {
 
@@ -48,7 +40,7 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
 
     private int mRouteId;
     private String mRouteName;
-    private BusStop.BusStopList mBusStopList;
+    private BusStopList mBusStopList;
     private DepartureList mDepartureList;
 
     private TextView mRouteNameTextView;
@@ -66,9 +58,6 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
 
         mRouteId   = getIntent().getIntExtra(EXTRA_ROUTE_ID, 0);
         mRouteName = getIntent().getStringExtra(EXTRA_ROUTE_NAME);
-
-        Log.i("ROUTES", "ID: " + mRouteId);
-        Log.i("ROUTES", "NAME: " + mRouteName);
 
         ActionBar ab = getActionBar();
         ab.setTitle(mRouteId + " - " + mRouteName);
@@ -92,12 +81,6 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
         intent.putExtra("receiver", mResultReceiver);
 
         startService(intent);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i("Routes", "ON DESTROY");
     }
 
     @Override
@@ -129,7 +112,7 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
 
                 try {
                     // Set BusStop Adapter
-                    mBusStopList = new BusStop.BusStopList(resultBus);
+                    mBusStopList = new BusStopList(resultBus);
                     BusStopAdapter busAdapter = new BusStopAdapter(mBusStopList.getBusStopList());
                     mStopListView.setAdapter(busAdapter);
 

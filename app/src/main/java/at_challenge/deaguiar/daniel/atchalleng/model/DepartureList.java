@@ -7,7 +7,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by daniel on 15/06/15.
+ * DepartureList
+ *
+ * @author Daniel Besen de Aguiar
  */
 public class DepartureList {
 
@@ -23,7 +25,11 @@ public class DepartureList {
 
     public DepartureList(String result) {
         mDepartures = new ArrayList<Departure>();
-        setDepartures(result);
+        try {
+            setDepartures(result);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<Departure> getDepartures(String calendarValue) {
@@ -40,7 +46,12 @@ public class DepartureList {
         return mDepartures;
     }
 
-    public void setDepartures(String result) {
+    /**
+     * Gets a JSON String, parse it's data and save it in a ArrayList of Departure
+     * @param result
+     * @throws JSONException
+     */
+    public void setDepartures(String result) throws JSONException {
         try {
             JSONObject jsonObject = new JSONObject(result);
 

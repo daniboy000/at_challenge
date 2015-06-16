@@ -1,7 +1,9 @@
 package at_challenge.deaguiar.daniel.atchalleng.model;
 
 /**
- * Created by daniel on 14/06/15.
+ * Departure
+ *
+ * @author Daniel Besen de Aguiar
  */
 public class Departure {
     private int mId;

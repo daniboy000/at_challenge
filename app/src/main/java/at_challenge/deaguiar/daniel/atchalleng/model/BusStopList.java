@@ -7,7 +7,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by daniel on 14/06/15.
+ * BusStopList
+ *
+ * @author Daniel Besen de Aguiar
  */
 public class BusStopList {
 

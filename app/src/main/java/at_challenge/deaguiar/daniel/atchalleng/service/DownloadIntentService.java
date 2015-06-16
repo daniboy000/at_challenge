@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Base64;
-import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,7 +18,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created by daniel on 15/06/15.
+ * DownloadIntentService
+ * Responsible to request data from server
+ *
+ * @author Daniel Besen de Aguiar
  */
 public class DownloadIntentService extends IntentService {
 
@@ -30,7 +32,7 @@ public class DownloadIntentService extends IntentService {
     public static final String RESULT_DEPARTURE = "result_departure";
 
     public static final int STATUS_FINISHED = 0;
-    public static final int STATUS_ERROR = 1;
+    public static final int STATUS_ERROR    = 1;
 
     private final static String USERNAME = "WKD4N7YMA1uiM8V";
     private final static String PASSWORD = "DtdTtzMLQlA0hk2C1Yi5pLyVIlAQ68";
@@ -51,9 +53,6 @@ public class DownloadIntentService extends IntentService {
         String urlStop = intent.getStringExtra(URL_BUS_STOP);
         String urlDepart = intent.getStringExtra(URL_BUS_DEPARTURE);
 
-        Log.i("ROUTES", "urlStop: " + urlStop);
-        Log.i("ROUTES", "urlDepart: " + urlDepart);
-
         Bundle bundle = new Bundle();
         String jsonValue = "{\"params\": {\"routeId\": \"" + id + "\"}}";
 
@@ -70,12 +69,9 @@ public class DownloadIntentService extends IntentService {
             InputStream inputStreamDeparture = responseDepart.getEntity().getContent();
 
             // Check if response is valid
-            if (inputStreamBus != null /* && inputStreamDeparture != null*/) {
+            if (inputStreamBus != null  && inputStreamDeparture != null) {
                 resultBus = convertInputStreamToString(inputStreamBus);
-                Log.i("ROUTES", "BUS FETCH: " + resultBus);
-
                 resultDepart = convertInputStreamToString(inputStreamDeparture);
-                Log.i("ROUTES", "DEPARTURE FETCH: " + resultDepart);
 
                 bundle.putString(RESULT_BUS , resultBus);
                 bundle.putString(RESULT_DEPARTURE, resultDepart);
@@ -87,6 +83,13 @@ public class DownloadIntentService extends IntentService {
         }
     }
 
+    /**
+     * Tries to fetch JSON values from url
+     * @param jsonValue search for stop or departure id
+     * @param url request url
+     * @return server response
+     * @throws IOException
+     */
     protected HttpResponse getHttpResponse(String jsonValue, String url) throws IOException {
         HttpClient client = new DefaultHttpClient();
         HttpPost postRequest = new HttpPost(url);

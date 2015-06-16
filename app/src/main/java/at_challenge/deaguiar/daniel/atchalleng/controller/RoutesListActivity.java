@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,9 +28,15 @@ import at_challenge.deaguiar.daniel.atchalleng.util.HttpRequesAsyncTask;
 import at_challenge.deaguiar.daniel.atchalleng.R;
 
 /**
+ * RoutesListActivity
+ * Class responsible to fetch routes from server and show it to user.
  *
+ * @author Daniel Besen de Aguiar
  */
 public class RoutesListActivity extends ListActivity {
+
+    private static final String LIST = "list";
+    private static final String ROUTE_NAME = "route_name";
 
     RouteList mRouteList;
     private ListView mListView;
@@ -42,17 +47,14 @@ public class RoutesListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes_list);
 
-        Log.i("Routes", "ON CREATE MAIN");
-
         mRouteTitle = (TextView) findViewById(R.id.route_title);
         mListView = (ListView)findViewById(android.R.id.list);
         mRouteList = new RouteList();
 
         // Check for saved data
         if (savedInstanceState != null) {
-            Log.i("ROUTES", "RECUPERANDO BUNDLE");
-            mRouteList = (RouteList)savedInstanceState.getSerializable("LIST");
-            String routeName = savedInstanceState.getString("ROUTE_NAME");
+            mRouteList = (RouteList)savedInstanceState.getSerializable(LIST);
+            String routeName = savedInstanceState.getString(ROUTE_NAME);
             mRouteTitle.setText(routeName);
             setupAdapter();
         }
@@ -64,41 +66,10 @@ public class RoutesListActivity extends ListActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("Routes", "ON RESUME MAIN");
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i("Routes", "ON START MAIN");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("Routes", "ON PAUSE MAIN");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i("ROUTES", "ON STOP MAIN");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("Routes", "ON DESTROY  MAIN");
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        Log.i("ROUTES", "SALVANDO O BUNDLE");
-        savedInstanceState.putSerializable("LIST", mRouteList);
-        savedInstanceState.putSerializable("ROUTE_NAME", mRouteTitle.getText().toString());
+        savedInstanceState.putSerializable(LIST, mRouteList);
+        savedInstanceState.putSerializable(ROUTE_NAME, mRouteTitle.getText().toString());
     }
 
     @Override
@@ -115,13 +86,16 @@ public class RoutesListActivity extends ListActivity {
             }
             else {
                 Toast.makeText(getApplicationContext(),
-                        "Your device is not connected. Please check your internet connection",
+                        R.string.device_diconnected,
                         Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    void setupAdapter() {
+    /**
+     * Update RouteAdapter data and notifies that data changed
+     */
+    private void setupAdapter() {
         RouteAdapter routeAdapter = new RouteAdapter(mRouteList.getRoutes());
         setListAdapter(routeAdapter);
         routeAdapter.notifyDataSetChanged();
@@ -131,8 +105,6 @@ public class RoutesListActivity extends ListActivity {
         if (internetIsAvailable()) {
             Route route = ((RouteAdapter) getListAdapter()).getItem(position);
 
-            Log.i("ROUTE", "Route item: " + route.getLongName());
-
             Intent i = new Intent(getApplicationContext(), RouteDetailActivity.class);
             i.putExtra(RouteDetailActivity.EXTRA_ROUTE_ID, route.getId());
             i.putExtra(RouteDetailActivity.EXTRA_ROUTE_NAME, route.getLongName());
@@ -141,7 +113,7 @@ public class RoutesListActivity extends ListActivity {
         }
         else {
             Toast.makeText(getApplicationContext(),
-                    "Your device is not connected. Please check your internet connection",
+                    R.string.device_diconnected,
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -199,6 +171,10 @@ public class RoutesListActivity extends ListActivity {
         }
     }
 
+    /**
+     * Check if wifi or mobile connection are available
+     * @return
+     */
     private boolean internetIsAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -231,14 +207,10 @@ public class RoutesListActivity extends ListActivity {
                 if (!jsonObject.isNull("error")) {
                     JSONObject jsonError = jsonObject.getJSONObject("error");
 
-                    Log.i("ROUTES", jsonObject.getString("error"));
                     Toast.makeText(getApplicationContext(), jsonError.getString("message"), Toast.LENGTH_LONG).show();
                 }
                 else if (jsonObject.getJSONArray("rows").length() == 0) { // Check if the route was founded
-                    Log.i("ROUTES", "result: " + result);
-                    Log.i("ROUTES", "result: " + jsonObject.getJSONArray("rows").length());
-
-                    Toast.makeText(getApplicationContext(), "Address Not Found", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.address_not_found, Toast.LENGTH_LONG).show();
                 }
                 else { // Show routes
                     mRouteTitle.setText(mRoute);
