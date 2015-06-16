@@ -60,8 +60,8 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
         mRouteName = getIntent().getStringExtra(EXTRA_ROUTE_NAME);
 
         ActionBar ab = getActionBar();
-        ab.setTitle(mRouteId + " - " + mRouteName);
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(R.string.route_and_departure);
 
         mRouteNameTextView = (TextView)findViewById(R.id.route_detail_name);
         mStopListView      = (ListView)findViewById(R.id.route_detail_stop_list);
@@ -107,9 +107,6 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
                 String resultBus = resultData.getString(DownloadIntentService.RESULT_BUS);
                 String resultDepart = resultData.getString(DownloadIntentService.RESULT_DEPARTURE);
 
-                ActionBar ab = getActionBar();
-                ab.setTitle("Route and Departure Time");
-
                 try {
                     // Set BusStop Adapter
                     mBusStopList = new BusStopList(resultBus);
@@ -121,16 +118,25 @@ public class RouteDetailActivity extends Activity implements DownloadResultRecei
 
                     // set Weekday Departure Adapter
                     ArrayList<Departure> weekdayDeparts = mDepartureList.getDepartures("WEEKDAY");
+                    if (weekdayDeparts.isEmpty()) {
+                        weekdayDeparts.add(new Departure(0, "WEEKDAY", "NO DEPARTURES"));
+                    }
                     DepartureAdapter weekdayAdapter = new DepartureAdapter(weekdayDeparts);
                     mWeekdayListView.setAdapter(weekdayAdapter);
 
                     // set Saturday Departure Adapter
                     ArrayList<Departure> saturdayDeparts = mDepartureList.getDepartures("SATURDAY");
+                    if (saturdayDeparts.isEmpty()) {
+                        saturdayDeparts.add(new Departure(0, "SATURDAY", "NO DEPARTURES"));
+                    }
                     DepartureAdapter saturdayAdapter = new DepartureAdapter(saturdayDeparts);
                     mStaturdayListView.setAdapter(saturdayAdapter);
 
                     // set Sunday Departure Adapter
                     ArrayList<Departure> sundayDeparts = mDepartureList.getDepartures("SUNDAY");
+                    if (sundayDeparts.isEmpty()) {
+                        sundayDeparts.add(new Departure(0, "SUNDAY", "NO DEPARTURES"));
+                    }
                     DepartureAdapter sundayAdapter = new DepartureAdapter(sundayDeparts);
                     mSundayListView.setAdapter(sundayAdapter);
                 } catch (JSONException e) {

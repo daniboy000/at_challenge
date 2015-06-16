@@ -16,6 +16,12 @@ public class Departure {
         mTime = "";
     }
 
+    public Departure(int id, String calendar, String time) {
+        mId = id;
+        mCalendar = calendar;
+        mTime = time;
+    }
+
     public int getId() {
         return mId;
     }

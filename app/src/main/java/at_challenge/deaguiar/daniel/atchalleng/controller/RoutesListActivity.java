@@ -1,5 +1,6 @@
 package at_challenge.deaguiar.daniel.atchalleng.controller;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -50,6 +51,9 @@ public class RoutesListActivity extends ListActivity {
         mRouteTitle = (TextView) findViewById(R.id.route_title);
         mListView = (ListView)findViewById(android.R.id.list);
         mRouteList = new RouteList();
+
+        ActionBar ab = getActionBar();
+        ab.setTitle(R.string.route_list);
 
         // Check for saved data
         if (savedInstanceState != null) {
